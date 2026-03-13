@@ -1,0 +1,20 @@
+-- 1. Allow Admins (identified by email) to update any profile
+-- This is required for the "Approve/Reject Agent" functionality to work.
+-- Replace 'vincentlewa6@gmail.com' with your actual admin email if different.
+
+CREATE POLICY "Admins can update any profile"
+ON public.profiles
+FOR UPDATE
+USING (
+  (auth.jwt() ->> 'email') = 'vincentlewa6@gmail.com'
+  OR
+  (auth.jwt() ->> 'email') LIKE '%@ipay.com'
+);
+
+-- 2. Ensure the policy is applied
+ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
+
+-- 3. Cleanup any existing 'blob:' URLs in the database (Self-healing)
+UPDATE public.profiles
+SET avatar_url = NULL
+WHERE avatar_url LIKE 'blob:%';

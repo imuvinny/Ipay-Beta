@@ -1,0 +1,9 @@
+-- Add commission_balance and float_balance to profiles table
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS commission_balance NUMERIC DEFAULT 0;
+
+ALTER TABLE public.profiles 
+ADD COLUMN IF NOT EXISTS float_balance NUMERIC DEFAULT 5000.00;
+
+-- Ensure RLS allows users to update their own profile (if not already covered)
+-- The existing "Users can update own profile" policy should cover this.

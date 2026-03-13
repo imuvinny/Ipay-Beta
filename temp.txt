@@ -1,0 +1,350 @@
+159-    accentColor: ThemeColor;
+160-}
+161-
+162-const ActionButton: FC<ActionButtonProps> = ({ icon, label, onClick, large = false, accentColor }) => {
+163-    if (large) {
+164:        return (
+165-            <button onClick={onClick} className={`flex-1 ${themes[accentColor].bg} text-black font-bold py-4 rounded-full text-lg hover:opacity-90 transition-opacity`}>
+166-                {label}
+167-            </button>
+168-        );
+169-    }
+170:    return (
+--
+185-
+186-const TransactionItem: FC<TransactionItemProps> = ({ icon, type, date, amount, isCredit, accentColor, currency, conversionRate, fee }) => {
+187-    const symbol = currency === 'USD' ? '$' : 'K';
+188-    const displayedAmount = (currency === 'ZMW' ? parseFloat(amount) * conversionRate : parseFloat(amount)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+189-    
+190:    return (
+--
+217-
+218-const CurrentTime = () => {
+219-    const [time, setTime] = useState(new Date());
+220-    useEffect(() => {
+221-        const timer = setInterval(() => setTime(new Date()), 1000);
+222:        return () => clearInterval(timer);
+223-    }, []);
+224:    return (
+--
+245-const TransactionStatusScreen: FC<TransactionStatusScreenProps> = ({ status, title, message, onDone, accentColor, children }) => {
+246-    const isSuccess = status === 'success';
+247-    // Use red for failure
+248-    const bgColor = isSuccess ? themes[accentColor].bg : 'bg-[#ff3b30]';
+249-    
+250:    return (
+--
+388-        </button>
+389-    );
+390-
+391-    // --- LANDING VIEW ---
+392-    if (authMode === 'landing') {
+393:        return (
+--
+423-        );
+424-    }
+425-
+426-    // --- LOGIN VIEW ---
+427-    if (authMode === 'login') {
+428:        return (
+--
+486-        );
+487-    }
+488-
+489-    // --- SIGN UP: INPUT VIEW ---
+490-    if (authMode === 'signup-input') {
+491:        return (
+--
+538-        );
+539-    }
+540-
+541-    // --- SIGN UP: TAG CREATION VIEW ---
+542-    if (authMode === 'signup-tag') {
+543:        return (
+--
+712-        } finally {
+713-            setUploading(false);
+714-        }
+715-    };
+716-
+717:    return (
+--
+891-    const handleSave = () => {
+892-        onSaveSkin(previewSkin);
+893-        setShowSettings(false);
+894-    };
+895-
+896:    return (
+--
+1078-            } else {
+1079-                setScanError("NFC not supported on this device.");
+1080-            }
+1081-        }
+1082-
+1083:        return () => {
+--
+1123-        const symbol = currency === 'USD' ? '$' : 'K';
+1124-        const displayedAmount = parseFloat(amount).toFixed(2);
+1125-        return <div className="flex flex-col h-full bg-gray-50 dark:bg-black"><ScreenHeader title="Send Money" onBack={resetAndBack} /><TransactionStatusScreen status={status} title={status === 'success' ? 'Success!' : 'Transaction Failed'} message={status === 'success' ? `You have successfully sent ${symbol}${displayedAmount} to ${recipient}.` : 'Amount + Fee exceeds your available balance.'} onDone={resetAndBack} accentColor={accentColor} /></div>;
+1126-    }
+1127-    
+1128:    return (
+--
+1300-            } else {
+1301-                setScanError("NFC not supported on this device.");
+1302-            }
+1303-        }
+1304-
+1305:        return () => {
+--
+1341-    };
+1342-
+1343-    const resetAndBack = () => { setStatus(null); onBack(); };
+1344-
+1345-    if (status) {
+1346:         return (
+--
+1355-                />
+1356-             </div>
+1357-         );
+1358-    }
+1359-
+1360:    return (
+--
+1504-                    }
+1505-                }
+1506-            )
+1507-            .subscribe();
+1508-
+1509:        return () => {
+--
+1538-                         setScanError("Camera permission denied.");
+1539-                     });
+1540-                 }
+1541-             }, 100);
+1542-        }
+1543:        return () => {
+--
+1596-    // Determine display symbol and converted balance for UI
+1597-    const symbol = currency === 'ZMW' ? 'K' : '$';
+1598-    const displayedBalance = currency === 'ZMW' ? agentBalance * conversionRate : agentBalance;
+1599-
+1600-    if (step === 2) {
+1601:        return (
+--
+1611-            </div>
+1612-        );
+1613-    }
+1614-
+1615-    if (step === 3) {
+1616:        return (
+--
+1626-            </div>
+1627-        );
+1628-    }
+1629-
+1630-    if (requestStatus === 'pending') {
+1631:        return (
+--
+1641-                </div>
+1642-            </div>
+1643-        );
+1644-    }
+1645-
+1646:    return (
+--
+1705-    conversionRate: number;
+1706-}> = ({ request, onApprove, onReject, accentColor, currency, conversionRate }) => {
+1707-    const symbol = currency === 'USD' ? '$' : 'K';
+1708-    const displayAmount = (currency === 'ZMW' ? request.amount * conversionRate : request.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+1709-
+1710:    return (
+--
+1795-        return `${x},${y}`;
+1796-    }).join(' ');
+1797-
+1798-    const fillPath = `${points} 100,100 0,100`;
+1799-
+1800:    return (
+--
+1872-                            
+1873-                            {/* Dots */}
+1874-                            {trendData.map((d, i) => {
+1875-                                const x = (i / (trendData.length - 1)) * 100;
+1876-                                const y = 100 - ((d.value / maxVal) * 80);
+1877:                                return (
+--
+1910-                            const txAmountUSD = parseFloat(t.amount);
+1911-                            const displayedTxAmount = currency === 'ZMW' ? txAmountUSD * conversionRate : txAmountUSD;
+1912-                            const comm = t.commission || 0;
+1913-                            const displayedComm = currency === 'ZMW' ? comm * conversionRate : comm;
+1914-
+1915:                            return (
+--
+1959-        // For now, we call the onRegister callback which should update the profile status
+1960-        onRegister(formData);
+1961-        setLoading(false);
+1962-    };
+1963-
+1964:    return (
+--
+2098-const ClientToolsScreen: FC<{ onBack: () => void; accentColor: ThemeColor; setScreen: (s: string) => void }> = ({ onBack, accentColor, setScreen }) => {
+2099-    const date = new Date();
+2100-    date.setMonth(date.getMonth() - 1);
+2101-    const previousMonth = date.toLocaleString('default', { month: 'long' });
+2102-
+2103:    return (
+--
+2130-};
+2131-
+2132-const ClientQRCodeScreen: FC<{ onBack: () => void; accentColor: ThemeColor; profile: UserProfile }> = ({ onBack, accentColor, profile }) => {
+2133-    const qrValue = `ipay:${profile.name.replace('@', '')}`; // e.g., ipay:username
+2134-
+2135:    return (
+--
+2155-        </div>
+2156-    );
+2157-};
+2158-
+2159-const AgentToolsScreen: FC<{ onBack: () => void; accentColor: ThemeColor; setScreen: (s: string) => void }> = ({ onBack, accentColor, setScreen }) => {
+2160:    return (
+--
+2182-};
+2183-
+2184-const AgentQRCodeScreen: FC<{ onBack: () => void; accentColor: ThemeColor; profile: UserProfile }> = ({ onBack, accentColor, profile }) => {
+2185-    const qrValue = `ipay:${profile.name.replace('@', '')}`; 
+2186-
+2187:    return (
+--
+2229-
+2230-    useEffect(() => {
+2231-        const timer = setTimeout(() => {
+2232-            setWelcomeVisible(false);
+2233-        }, 3000); // Disappear after 3 seconds
+2234:        return () => clearTimeout(timer);
+--
+2257-    };
+2258-    
+2259-    const loansIcon = <HandCoins size={24} />; 
+2260-    const billsIcon = <Receipt size={24} />; 
+2261-    
+2262:    return (
+--
+2386-            console.error("Error toggling online status:", error);
+2387-            setIsToggling(false);
+2388-        }
+2389-    };
+2390-
+2391:    return (
+--
+2605-                setIsSearching(false);
+2606-            }
+2607-        };
+2608-
+2609-        const debounce = setTimeout(fetchUsers, 300);
+2610:        return () => clearTimeout(debounce);
+--
+2740-                    }
+2741-                }
+2742-            )
+2743-            .subscribe();
+2744-
+2745:        return () => {
+--
+2941-    // --- Sub-components for Chat ---
+2942-
+2943-    if (activeChat) {
+2944-        const chatMsgs = messages[activeChat.id] || [];
+2945-        
+2946:        return (
+--
+3115-            </div>
+3116-        );
+3117-    }
+3118-
+3119-    // --- Main List View ---
+3120:    return (
+--
+3226-        { name: 'Water', icon: <Droplets size={24} />, color: 'bg-blue-500', gradient: 'from-blue-400 to-cyan-500', amount: 35.00 },
+3227-        { name: 'Internet', icon: <Globe size={24} />, color: 'bg-purple-500', gradient: 'from-purple-400 to-pink-500', amount: 80.00 },
+3228-        { name: 'DSTV', icon: <Tv size={24} />, color: 'bg-red-500', gradient: 'from-red-400 to-pink-600', amount: 45.00 },
+3229-    ];
+3230-
+3231:    return (
+--
+3504-            } else {
+3505-                // Optional: Auto-close on finish? 
+3506-                // onBack(); 
+3507-            }
+3508-        }, 4000);
+3509:        return () => clearTimeout(timer);
+--
+3516-
+3517-    const handlePrev = () => {
+3518-        if (currentSlide > 0) setCurrentSlide(c => c - 1);
+3519-    };
+3520-
+3521:    return (
+--
+3610-            ? `You hit your target of $${goal.target}! Time to claim your reward and set a new quest.`
+3611-            : (status === 'failure' 
+3612-                ? 'Insufficient funds to complete this deposit.' 
+3613-                : `You added $${depositAmount} to your quest and earned 100 XP! ${remaining > 0 ? `$${remaining.toFixed(2)} to go!` : 'Goal Complete!'}`);
+3614-
+3615:        return (
+--
+3628-                </TransactionStatusScreen>
+3629-            </div>
+3630-        );
+3631-    }
+3632-    
+3633:    return (
+--
+3758-            setLoading(false);
+3759-        });
+3760-
+3761-        channel.subscribe();
+3762-
+3763:        return () => {
+--
+3781-        iconSize: [20, 20],
+3782-        iconAnchor: [10, 10],
+3783-        popupAnchor: [0, -10]
+3784-    });
+3785-
+3786:    return (
+--
+3884-
+3885-        fetchRate();
+3886-        
+3887-        // Refresh every 10 minutes
+3888-        const interval = setInterval(fetchRate, 600000);
+3889:        return () => clearInterval(interval);
+--
+3983-        const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+3984-            setIsAuthenticated(!!session);
+3985-            setCurrentUser(session?.user ?? null);
+3986-        });
+3987-
+3988:        return () => subscription.unsubscribe();
+--
+4079-                    // Only update if we don't already have one to avoid flicker
+4080-                    setIncomingRequest(prev => prev ? prev : data[0]);
+4081-                }
+4082-            }, 5000);
+4083-
+4084:            return () => {
+--
+4228-                    setUserProfile(prev => ({ ...prev, agentStatus: dbProfile.agent_status }));
+4229-                }
+4230-            }
+4231-        }, 3000); // Poll every 3 seconds
+4232-
+4233:        return () => clearInterval(pollInterval);
+--
+4763-    useEffect(() => {
+4764-        // Update body background color based on theme
+4765-        document.body.style.backgroundColor = theme === 'dark' ? '#000000' : '#f3f4f6'; // black or gray-100
+4766-    }, [theme]);
+4767-
+4768:    return (

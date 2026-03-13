@@ -1,0 +1,43 @@
+-- RPC to safely update agent balance and commission
+CREATE OR REPLACE FUNCTION update_agent_balance(
+    agent_id UUID,
+    amount NUMERIC,
+    commission NUMERIC,
+    is_withdrawal BOOLEAN
+)
+RETURNS VOID AS $$
+BEGIN
+    IF is_withdrawal THEN
+        -- Withdrawal: Float Increases, Commission Increases
+        UPDATE public.profiles
+        SET float_balance = COALESCE(float_balance, 0) + amount,
+            commission_balance = COALESCE(commission_balance, 0) + commission
+        WHERE id = agent_id;
+    ELSE
+        -- Deposit: Float Decreases, Commission Increases
+        UPDATE public.profiles
+        SET float_balance = COALESCE(float_balance, 0) - amount,
+            commission_balance = COALESCE(commission_balance, 0) + commission
+        WHERE id = agent_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- RPC to cash out commission
+CREATE OR REPLACE FUNCTION cash_out_commission(
+    agent_id UUID
+)
+RETURNS VOID AS $$
+DECLARE
+    comm_balance NUMERIC;
+BEGIN
+    SELECT commission_balance INTO comm_balance FROM public.profiles WHERE id = agent_id;
+    
+    IF comm_balance > 0 THEN
+        UPDATE public.profiles
+        SET float_balance = COALESCE(float_balance, 0) + comm_balance,
+            commission_balance = 0
+        WHERE id = agent_id;
+    END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

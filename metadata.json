@@ -1,0 +1,8 @@
+{
+  "name": "Copy of Remix: iPAY",
+  "description": "A modern, Gen-Z focused fintech application featuring dual client/agent dashboards, gamified savings, and customizable aesthetics.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}

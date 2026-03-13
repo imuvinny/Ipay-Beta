@@ -1,0 +1,19 @@
+-- 1. Enable Realtime for the pending_requests table
+-- This is often the missing step for INSERT events to be broadcasted.
+-- Note: 'supabase_realtime' is the default publication name.
+ALTER PUBLICATION supabase_realtime ADD TABLE pending_requests;
+
+-- 2. Double check RLS policies (Again, to be absolutely sure)
+-- Ensure Clients can SELECT rows where they are the client_id
+DROP POLICY IF EXISTS "Clients can view their requests" ON public.pending_requests;
+CREATE POLICY "Clients can view their requests" 
+ON public.pending_requests 
+FOR SELECT 
+USING (auth.uid() = client_id);
+
+-- 3. Ensure Clients can UPDATE rows (to approve/reject)
+DROP POLICY IF EXISTS "Clients can update their requests" ON public.pending_requests;
+CREATE POLICY "Clients can update their requests" 
+ON public.pending_requests 
+FOR UPDATE 
+USING (auth.uid() = client_id);

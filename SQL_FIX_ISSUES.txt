@@ -1,0 +1,34 @@
+-- 1. Ensure Profiles are viewable by everyone (needed for Agent lookup)
+-- This fixes the "User Not Found" error when an agent tries to find a client.
+DROP POLICY IF EXISTS "Profiles are viewable by everyone" ON public.profiles;
+CREATE POLICY "Profiles are viewable by everyone" 
+ON public.profiles FOR SELECT 
+USING ( true );
+
+-- 2. Ensure the pending_requests table exists (in case it wasn't created previously)
+CREATE TABLE IF NOT EXISTS public.pending_requests (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    agent_id UUID REFERENCES auth.users(id),
+    client_id UUID REFERENCES auth.users(id),
+    amount NUMERIC NOT NULL,
+    agent_name TEXT,
+    client_name TEXT,
+    status TEXT DEFAULT 'pending'
+);
+
+-- 3. Ensure RLS is enabled
+ALTER TABLE public.pending_requests ENABLE ROW LEVEL SECURITY;
+
+-- 4. Re-apply policies for pending_requests to be safe
+DROP POLICY IF EXISTS "Agents can insert requests" ON public.pending_requests;
+CREATE POLICY "Agents can insert requests" ON public.pending_requests FOR INSERT WITH CHECK (auth.uid() = agent_id);
+
+DROP POLICY IF EXISTS "Agents can view their requests" ON public.pending_requests;
+CREATE POLICY "Agents can view their requests" ON public.pending_requests FOR SELECT USING (auth.uid() = agent_id);
+
+DROP POLICY IF EXISTS "Clients can view their requests" ON public.pending_requests;
+CREATE POLICY "Clients can view their requests" ON public.pending_requests FOR SELECT USING (auth.uid() = client_id);
+
+DROP POLICY IF EXISTS "Clients can update their requests" ON public.pending_requests;
+CREATE POLICY "Clients can update their requests" ON public.pending_requests FOR UPDATE USING (auth.uid() = client_id);

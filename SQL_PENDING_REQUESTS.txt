@@ -1,0 +1,39 @@
+-- Create table for real-time withdrawal requests
+CREATE TABLE IF NOT EXISTS public.pending_requests (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT now(),
+    agent_id UUID REFERENCES auth.users(id),
+    client_id UUID REFERENCES auth.users(id),
+    amount NUMERIC NOT NULL,
+    agent_name TEXT,
+    client_name TEXT,
+    status TEXT DEFAULT 'pending' -- 'pending', 'approved', 'rejected'
+);
+
+-- Enable RLS
+ALTER TABLE public.pending_requests ENABLE ROW LEVEL SECURITY;
+
+-- Policies
+-- Agents can insert requests
+CREATE POLICY "Agents can insert requests" 
+ON public.pending_requests 
+FOR INSERT 
+WITH CHECK (auth.uid() = agent_id);
+
+-- Agents can view their own requests (to listen for updates)
+CREATE POLICY "Agents can view their requests" 
+ON public.pending_requests 
+FOR SELECT 
+USING (auth.uid() = agent_id);
+
+-- Clients can view requests sent to them
+CREATE POLICY "Clients can view their requests" 
+ON public.pending_requests 
+FOR SELECT 
+USING (auth.uid() = client_id);
+
+-- Clients can update requests sent to them (to approve/reject)
+CREATE POLICY "Clients can update their requests" 
+ON public.pending_requests 
+FOR UPDATE 
+USING (auth.uid() = client_id);
